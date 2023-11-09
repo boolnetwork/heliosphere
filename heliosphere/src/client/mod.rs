@@ -93,9 +93,10 @@ impl RpcClient {
         P: Serialize,
         R: DeserializeOwned,
     {
+        let url = self.rpc_url.join(method).map_err(|_| crate::Error::InvalidUrl)?;
         Ok(self
             .client
-            .post(&format!("{}/{}", self.rpc_url, method))
+            .post(url)
             .json(payload)
             .send()
             .await?
@@ -108,9 +109,10 @@ impl RpcClient {
     where
         R: DeserializeOwned,
     {
+        let url = self.rpc_url.join(method).map_err(|_| crate::Error::InvalidUrl)?;
         Ok(self
             .client
-            .get(&format!("{}/{}", self.rpc_url, method))
+            .get(url)
             .send()
             .await?
             .json()
@@ -217,7 +219,7 @@ impl RpcClient {
                 "owner_address": from.as_hex(),
                 "to_address": to.as_hex(),
                 "amount": amount,
-                "extra_data": hex::encode([0x72; 64]),
+                "extra_data": hex::encode([]),
             }),
         )
         .await
